@@ -16,7 +16,7 @@ export const App = () => {
   const [largeImageURL, setLargeImageURL] = useState('');
   const [tags, setTags] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [_, setError] = useState('');
+  const [, setError] = useState('');
 
   const onImageClick = ({ largeImageURL, tags }) => {
     setLargeImageURL(largeImageURL);
@@ -44,9 +44,9 @@ export const App = () => {
         const images = await getImages(page, query);
         console.log(images);
         setHitsImages(prevState => [...prevState, ...images.images]);
-        setShownLoadMore(
-          prevState => prevState.page < Math.ceil(images.totalHits / 12)
-        );
+        setShownLoadMore(page < Math.ceil(images.totalHits / 12));
+        console.log(page);
+        console.log(images.totalHits);
         console.log(shownLoadMore);
         setIsLoading(false);
       } catch (error) {
