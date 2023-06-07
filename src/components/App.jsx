@@ -57,7 +57,7 @@ export const App = () => {
     };
 
     imagesSearch(query, page);
-  }, [query, page]);
+  }, [query, page, shownLoadMore]);
 
   const onModalClick = e => {
     setShowModal(false);
