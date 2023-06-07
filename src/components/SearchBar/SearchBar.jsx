@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export const SearchBar = ({ handelSubmit }) => {
+export const SearchBar = ({ onSubmit }) => {
   const [query, setQuery] = useState('');
 
   const onChangeForm = e => {

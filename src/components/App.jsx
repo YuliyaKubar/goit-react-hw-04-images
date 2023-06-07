@@ -16,73 +16,48 @@ export const App = () => {
   const [largeImageURL, setLargeImageURL] = useState('');
   const [tags, setTags] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const onImageClick = ({ largeImageURL, tags }) => {
-    
     setLargeImageURL(largeImageURL);
     setTags(tags);
-    setShowModal(true)
+    setShowModal(true);
   };
 
   const onSubmit = query => {
     setQuery(query.trim());
     setPage(1);
-    setHitsImages([])
+    setHitsImages([]);
   };
 
   const loadMoreClick = e => {
-    setPage(page + 1)
+    setPage(page + 1);
   };
 
-  // async componentDidUpdate(prevProps, prevState) {
-  //   if (
-  //     prevState.query === this.state.query &&
-  //     prevState.page === this.state.page
-  //   ) {
-  //     return;
-  //   }
-  //   if (!this.state.query.trim()) {
-  //     return;
-  //   }
-  //   this.setState({ isLoading: true });
-  //   try {
-  //     const {
-  //       data: { hits, totalHits },
-  //     } = await getImages({
-  //       query: this.state.query,
-  //       page: this.state.page,
-  //     });
-  //     this.setState(prevState => ({
-  //       hitsImages: [...prevState.hitsImages, ...getNormalizedImages(hits)],
-  //       shownLoadMore: prevState.page < Math.ceil(totalHits / 12),
-  //     }));
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   } finally {
-  //     this.setState({ isLoading: false });
-  //   }
-  // }
+  const imagesSearch = async (query, page) => {
+    try {
+      if (!query.trim()) {
+        return;
+      }
+      setIsLoading(true);
+      const images = await getImages(page, query);
+      console.log(images);
+      setHitsImages(prevState => [...prevState, ...images.images]);
+      setShownLoadMore(
+        prevState => prevState.page < Math.ceil(images.totalHits / 12)
+      );
+      console.log(shownLoadMore);
+      setIsLoading(false);
+    } catch (error) {
+      setError(true);
+      setIsLoading(false);
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    if (query) {
-      return
-    }
-    if (!query.trim()) {
-      return
-    }
-    setIsLoading(true)
-    try {
-      const data = { hits, totalHits }
-    } = {
-      getImages(setQuery, setPage)
-      setHitsImages(prevState => ([...prevState, ...getNormalizedImages(hits)]))
-      shownLoadMore: prevState.page < Math.ceil(totalHits / 12),}
-    catch (error) {
-      console.log(error.message);
-    } finally {
-      setIsLoading(false)
-    }
-  }, [query, page])
+    imagesSearch(query, page);
+  }, [query, page]);
 
   const onModalClick = e => {
     setShowModal(false);
@@ -91,10 +66,7 @@ export const App = () => {
   return (
     <>
       <SearchBar onSubmit={onSubmit} />
-      <ImageGallary
-        hitsImages={hitsImages}
-        onImageClick={onImageClick}
-      />
+      <ImageGallary hitsImages={hitsImages} onImageClick={onImageClick} />
       {shownLoadMore && <Button onClick={loadMoreClick} />}
       {showModal && (
         <Modal
@@ -103,7 +75,7 @@ export const App = () => {
           onModalClick={onModalClick}
         />
       )}
-      {this.state.isLoading && <Loader />}
+      {isLoading && <Loader />}
     </>
   );
 };
