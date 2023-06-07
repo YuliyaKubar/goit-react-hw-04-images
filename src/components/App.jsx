@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { SearchBar } from 'components/SearchBar/SearchBar';
 import { getImages } from 'api/api';
-import { getNormalizedImages } from 'helpers/getNormalizedImages';
+// import { getNormalizedImages } from 'helpers/getNormalizedImages';
 import { ImageGallary } from './ImageGallary/ImageGallary';
 import { Button } from './Button/Button';
 import { Modal } from './Modal/Modal';
@@ -16,7 +16,7 @@ export const App = () => {
   const [largeImageURL, setLargeImageURL] = useState('');
   const [tags, setTags] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [_, setError] = useState('');
 
   const onImageClick = ({ largeImageURL, tags }) => {
     setLargeImageURL(largeImageURL);
@@ -34,28 +34,28 @@ export const App = () => {
     setPage(page + 1);
   };
 
-  const imagesSearch = async (query, page) => {
-    try {
-      if (!query.trim()) {
-        return;
-      }
-      setIsLoading(true);
-      const images = await getImages(page, query);
-      console.log(images);
-      setHitsImages(prevState => [...prevState, ...images.images]);
-      setShownLoadMore(
-        prevState => prevState.page < Math.ceil(images.totalHits / 12)
-      );
-      console.log(shownLoadMore);
-      setIsLoading(false);
-    } catch (error) {
-      setError(true);
-      setIsLoading(false);
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
+    const imagesSearch = async (query, page) => {
+      try {
+        if (!query.trim()) {
+          return;
+        }
+        setIsLoading(true);
+        const images = await getImages(page, query);
+        console.log(images);
+        setHitsImages(prevState => [...prevState, ...images.images]);
+        setShownLoadMore(
+          prevState => prevState.page < Math.ceil(images.totalHits / 12)
+        );
+        console.log(shownLoadMore);
+        setIsLoading(false);
+      } catch (error) {
+        setError(true);
+        setIsLoading(false);
+        console.log(error);
+      }
+    };
+
     imagesSearch(query, page);
   }, [query, page]);
 
